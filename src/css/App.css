@@ -1,0 +1,34 @@
+.homepage-container{
+  position: relative;
+}
+.popup-parent-container{
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.7);
+}
+.dropdown-option{
+  width: 80%;
+}
+
+@media (max-width: 576px) {
+  .popup-container{
+    width: 100%;
+  }
+}
+@media (min-width: 576px) and (max-width: 768px) {
+  .popup-container{
+    width: 70%;
+  }
+}
+@media (min-width: 768px) and (max-width: 992px) {
+  .popup-container{
+    width: 50%;
+  }
+}
+@media (min-width: 992px) {
+  .popup-container{
+    width: 40%;
+  }
+}
