@@ -8,6 +8,27 @@ function App() {
 
   const [popupStatus, setPopupStatus] = useState(false)
 
+  fetch('https://webhook.site/token/9a91f094-64f6-4960-9f4f-3c9d1a937d3b/requests', {
+    method: 'GET',
+    headers: {
+        Accept:'application/json',
+        'Content-Type':'application/json',
+    }
+  })
+  .then((resp) => resp.text())
+  .then((data) => {
+      alert('Data alert')
+      console.log('Received Data: ',data)
+  }).catch((error)=>{
+      alert('Err Occ')
+      console.log('Error in getting the items from the Server:',error)
+      if (error.response) {
+        console.log('Response:', error.response);
+        console.log('Status:', error.response.status);
+        console.log('Headers:', error.response.headers);
+      }
+  })
+
   return (
     <div className="container-fluid">
       <div className='row'>
@@ -23,6 +44,9 @@ function App() {
               <Popup popupStatus={setPopupStatus} />
             </div>
           }
+          <div>
+
+          </div>
         </div>
       </div>
     </div>

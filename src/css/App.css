@@ -12,6 +12,12 @@
   width: 80%;
 }
 
+.form-control.is-valid, .form-select.is-valid {
+  border-color: inherit;
+  padding-right: inherit;
+  background-image: none;
+}
+
 @media (max-width: 576px) {
   .popup-container{
     width: 100%;

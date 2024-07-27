@@ -8,12 +8,6 @@ const Popup = (props) => {
     // For storing the selected New Schema
     const [tempSchema, setTempSchema] = useState('Add schema to segment')
 
-    // To set the form validity
-    const [formValidated, setFormValidated] = useState(false)
-
-    // To check Schema's availability
-    const [isValidSchema, setIsValidSchema] = useState(false)
-
     // For storing the list of saved Schemas in object
     const [schemaStatus, setSchemaStatus] = useState({
             "first_name": false,
@@ -25,10 +19,27 @@ const Popup = (props) => {
             "state": false,
     })
 
+
+    // For storing the list of stored schemas in array -> For rendering based on condition
+    const [schema, setSchema] = useState([])
+
     useEffect(()=>{
-        const ValidSchema = Object.values(schemaStatus).some(data=>data===true)
-        setIsValidSchema(ValidSchema)
+        // Converting the Object into Array for achieving the validation
+        const SchemaArray = Object.entries(schemaStatus).filter(
+            ([, value])=> value === true
+        )
+        setSchema(SchemaArray)
+
+        // Checking for existing Schema
+        const checkValidSchema = Object.values(schemaStatus).some(data=>data===true)
+        if(checkValidSchema){
+            setIsValidSchema(true)
+        }else{
+            setIsValidSchema(false)
+        }
     },[schemaStatus])
+
+    console.log('schema: ',schema)
 
 
     const transformKey = (key) => {
@@ -37,18 +48,27 @@ const Popup = (props) => {
         .join(' ')
     }
 
+    const transformLabel = (key) => {
+        return key.split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+    }
+
     const convertFinal = () => {
         const resultOjb ={}
-
-        Object.entries(schemaStatus).forEach(([propKeypair, propValue])=>{
-            if(propValue===true)
-                resultOjb[propKeypair]=transformKey(propKeypair)
+        schema.forEach(data=>{
+            resultOjb[data[0]]=transformKey(data[0])
         })
-        
         return resultOjb
     }
 
+    console.log('Final Obj: ',convertFinal())
 
+    // To set the form validity
+    const [formValidated, setFormValidated] = useState(false)
+
+    // To set the temp schema validity
+    const [isValidSchema, setIsValidSchema] = useState(false)
 
 
     // To handle the existing schema updation
@@ -78,47 +98,23 @@ const Popup = (props) => {
 
     // Function to handle when submitting all the changes - on clicking the Save the Segment button.
     const handleSubmit = (e) => {
-
+        alert('func called')
         e.preventDefault();
         setFormValidated(true);
 
-        const finalObject = convertFinal()
-        const finalSchemas = Object.entries(finalObject)
         const isValidSegmentName = segmentName !== 'Name of the segment';
         const isValidTempSchema = tempSchema === 'Add schema to segment'
-
-        const sendData = {
-            segmentName,
-            finalSchemas
-        }
+        const isValidSchema = Object.values(schemaStatus).some(data=>data===true)
 
 
-        if (isValidSegmentName && isValidTempSchema && isValidSchema ) {
-
+        if (isValidSegmentName && isValidSchema && isValidTempSchema) {
+            alert('Submitted Data');
             setFormValidated(false); // Reset validation after successful submission
-
-            fetch('https://webhook.site/9a91f094-64f6-4960-9f4f-3c9d1a937d3b', {
-                method: 'POST',
-                headers: {
-                    Accept:'application/form-data',
-                    'Content-Type':'application/json',
-                },
-                body: JSON.stringify(sendData),
-            })
-            .then((resp) => resp.text())
-            .then((data) => {
-                alert('Data alert')
-                console.log('Received Data: ',data)
-            }).catch((error)=>{
-                alert('Err Occ')
-                console.log('Error in updating the cart items to the Server:',error)
-            });
         }
         else
             alert('Please fill in all the detials')    
     }
 
-    console.log('obj: ',schemaStatus)
 
   return (
     <div className='popup-container bg-light'>
@@ -147,13 +143,13 @@ const Popup = (props) => {
             <div className='my-3'>
                 
                 {
-                    Object.entries(schemaStatus).map(([propKeypair, propValue], i)=>{
+                    schema.map(([propKeypair, propValue], i)=>{
                         return(
                             <div key={i} className='m-2'>
                             {(propValue===true) && <div className='d-flex align-items-center justify-content-evenly w-100'>
                                 <i className="bi bi-circle-fill text-success dropdown-indicator"></i>
                                 <div className='dropdown-option'>
-                                    <select className={`px-3 py-2 fs-5 w-100 ${propKeypair !== 'Add schema to segment' ? 'is-valid' : 'is-invalid'}`} value={propKeypair} onChange={(e)=>handleSchemaUpdate(e.target.value, propKeypair)} required>
+                                    <select className={`px-3 py-2 fs-5 w-100 ${propKeypair !== 'Add schema to segment' ? 'is-valid' : 'is-invalid'}`} value={()=>transformLabel(propKeypair)} onChange={(e)=>handleSchemaUpdate(e.target.value, propKeypair)} required>
                                         <option disabled value={propKeypair}>{propKeypair}</option>
                                         {schemaStatus.first_name===false && <option value='first_name' >First Name</option>}
                                         {schemaStatus.last_name===false && <option value='last_name' >Last Name</option>}
@@ -186,7 +182,7 @@ const Popup = (props) => {
                 <div className='d-flex align-items-center justify-content-evenly w-100'>
                     {tempSchema !== 'Add schema to segment' && <i className="bi bi-circle-fill text-danger dropdown-indicator"></i>}
                     <div className='dropdown-option'>
-                        <select className={`px-3 py-2 fs-5 w-100 ${(formValidated) ? 'is-valid' : 'is-invalid'}`} value={tempSchema} onChange={(e) => setTempSchema(e.target.value)} required>
+                        <select className={`px-3 py-2 fs-5 w-100 ${(formValidated&&isValidSchema) ? 'is-valid' : 'is-invalid'}`} value={tempSchema} onChange={(e) => setTempSchema(e.target.value)} required={isValidSchema===false}>
                             <option disabled value="Add schema to segment">Add schema to segment</option>
                             {schemaStatus.first_name===false && <option value='first_name'>First Name</option>}
                             {schemaStatus.last_name===false && <option value='last_name'>Last Name</option>}
@@ -197,7 +193,7 @@ const Popup = (props) => {
                             {schemaStatus.state===false && <option value='state'>State</option>}
                         </select>
                         <div className='invalid-feedback'>
-                            {(tempSchema==="Add schema to segment" && (isValidSchema===false)) && <><i className="bi bi-exclamation-triangle"></i> Please select the required schema and click on the below <b>+ Add new schema</b> button.</>}
+                            {(tempSchema==="Add schema to segment" && isValidSchema===false) && <><i className="bi bi-exclamation-triangle"></i> Please select the required schema and click on the below <b>+ Add new schema</b> button.</>}
                         </div>
                         <div className='invalid-feedback'>
                             {(tempSchema!=="Add schema to segment") && <>
