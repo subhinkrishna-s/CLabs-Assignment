@@ -15,7 +15,7 @@ const Home = (props) => {
       <div className='row'>
         <div className='col-12 p-0 homepage-container'>
           <header className="app-header bg-primary text-light py-3 px-2">
-            <h1 className='fs-4 px-2 py-1 m-0' role='button'><i className="bi bi-chevron-left"></i> View Audience</h1>
+            <h1 className='fs-4 px-2 py-1 m-0' role='button' onClick={()=>window.open('https://subhinkrishna.vercel.app/','_blank')}><i className="bi bi-chevron-left"></i> View Audience</h1>
           </header>
           <div className='d-flex justify-content-center align-items-center py-3'>
             <button type='button' className='btn btn-outline-primary' onClick={() => setPopupStatus(true)}>Save segment</button>
@@ -39,7 +39,7 @@ const Home = (props) => {
                 </thead>
                 <tbody>
                   {
-                    (webhookData.length > 0) && webhookData.map((data, i) => {
+                    (webhookData.length > 0) ? webhookData.map((data, i) => {
                       return (
                         <tr key={i}>
                           <th scope="row">{i + 1}</th>
@@ -48,6 +48,10 @@ const Home = (props) => {
                         </tr>
                       )
                     })
+                    :
+                    <tr>
+                      <td colSpan='3' className='text-center'><em>No Data found! Create new by clicking the <b>Save Segment</b> button.</em></td>
+                    </tr>
                   }
                 </tbody>
               </table>
