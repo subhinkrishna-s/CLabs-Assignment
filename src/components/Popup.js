@@ -14,6 +14,9 @@ const Popup = (props) => {
     // To check Schema's availability
     const [isValidSchema, setIsValidSchema] = useState(false)
 
+    // To handle the submission loading on button
+    const [submitStatus, setSubmitStatus] = useState(false)
+
     // For storing the list of saved Schemas in object
     const [schemaStatus, setSchemaStatus] = useState({
             "first_name": false,
@@ -24,6 +27,7 @@ const Popup = (props) => {
             "city": false,
             "state": false,
     })
+
 
     useEffect(()=>{
         const ValidSchema = Object.values(schemaStatus).some(data=>data===true)
@@ -80,6 +84,7 @@ const Popup = (props) => {
     const handleSubmit = (e) => {
 
         e.preventDefault();
+        setSubmitStatus(true)
         setFormValidated(true);
 
         const finalObject = convertFinal()
@@ -107,8 +112,22 @@ const Popup = (props) => {
             })
             .then((resp) => resp.text())
             .then((data) => {
-                alert('Data alert')
-                console.log('Received Data: ',data)
+                setSubmitStatus(false)
+                setSegmentName('Name of the segment')
+                setTempSchema('Add schema to segment')
+                setSchemaStatus({
+                    "first_name": false,
+                    "last_name": false,
+                    "gender": false,
+                    "age": false,
+                    "account_name": false,
+                    "city": false,
+                    "state": false,
+                })
+                setFormValidated(false)
+                props.popupStatus(false)
+                alert('The Segments have been saved successfully!')
+                window.location.reload()
             }).catch((error)=>{
                 alert('Err Occ')
                 console.log('Error in updating the cart items to the Server:',error)
@@ -118,12 +137,11 @@ const Popup = (props) => {
             alert('Please fill in all the detials')    
     }
 
-    console.log('obj: ',schemaStatus)
 
   return (
     <div className='popup-container bg-light'>
       <div className='bg-primary py-3 px-2 text-light'>
-        <h2 onClick={()=>{props.popupStatus(false);window.history.back()}} className='fs-4 px-2 py-1 m-0' role='button'><i className="bi bi-chevron-left"></i> Saving Segment</h2>
+        <h2 onClick={()=>{props.popupStatus(false)}} className='fs-4 px-2 py-1 m-0' role='button'><i className="bi bi-chevron-left"></i> Saving Segment</h2>
       </div>
       <div className='py-4 px-3'>
         <form className={`needs-validation ${formValidated ? 'was-validated' : ''}`} noValidate onSubmit={(e)=>handleSubmit(e)}>
@@ -211,8 +229,15 @@ const Popup = (props) => {
             <u role='button' className='my-3 text-success link-offset-2' style={{ cursor: tempSchema === "Add schema to segment" ? 'not-allowed' : 'pointer' }} onClick={()=>{(tempSchema!=="Add schema to segment")&&UpdateSchema()}}>+ Add new schema</u>
 
             <div className='mt-5 my-3'>
-                <button type='submit' className='btn btn-success m-2 rounded-1'>Save the Segment</button>
-                <button className='btn btn-outline-danger m-2 rounded-1' onClick={()=>window.history.back()}>Cancel</button>
+                {
+                    submitStatus?
+                    <button className="btn btn-success m-2 rounded-1" type="button" disabled>
+                        <span className="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                        <span role="status">Submitting...</span>
+                    </button>
+                    :<button type='submit' className='btn btn-success m-2 rounded-1'>Save the Segment</button>
+                }
+                <button className='btn btn-outline-danger m-2 rounded-1' onClick={()=>props.popupStatus(false)}>Cancel</button>
             </div>
 
         </form>

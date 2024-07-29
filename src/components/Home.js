@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from 'react';
 import Popup from './Popup';
+import Loader from './Loader';
 
 const Home = (props) => {
 
@@ -8,6 +9,7 @@ const Home = (props) => {
 
   const webhookData = props.data
 
+  if(webhookData!==null){
   return (
     <div className="container-fluid">
       <div className='row'>
@@ -23,36 +25,45 @@ const Home = (props) => {
               <Popup popupStatus={setPopupStatus} />
             </div>
           }
-          <div className="table-responsive">
-            <table className="table">
-              {(webhookData.length < 1) && <caption className='text-center'>No Segments found!</caption>}
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Segment Name</th>
-                  <th scope="col">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {
-                  (webhookData.length > 0) && webhookData.map((data, i) => {
-                    console.log('map fnunc: ', data)
-                    return (
-                      <tr key={i}>
-                        <th scope="row">{i + 1}</th>
-                        <td>{data.segmentName}</td>
-                        <td><a href={`/segment/${i}`}>View</a></td>
-                      </tr>
-                    )
-                  })
-                }
-              </tbody>
-            </table>
+          <div className="table-responsive m-2 border border-5">
+            <h2 className='fs-3 py-2 text-center'><u>Available Segments</u></h2>
+            <div className='dashboard-table'>
+              <table className="table">
+                {(webhookData.length < 1) && <caption className='text-center'>No Segments found!</caption>}
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Segment Name</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    (webhookData.length > 0) && webhookData.map((data, i) => {
+                      return (
+                        <tr key={i}>
+                          <th scope="row">{i + 1}</th>
+                          <td>{data.segmentName}</td>
+                          <td><a href={`/segment/${i}`}>View</a></td>
+                        </tr>
+                      )
+                    })
+                  }
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  );
+  )
+  }else{
+    return(
+      <>
+        <Loader/>
+      </>
+    )
+  }
 }
 
 export default Home

@@ -18,6 +18,17 @@
   background-image: none;
 }
 
+.dashboard-table{
+  height: 40vh;
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
+.segment-content-container{
+  width: max-content;
+}
+
+
 @media (max-width: 576px) {
   .popup-container{
     width: 100%;

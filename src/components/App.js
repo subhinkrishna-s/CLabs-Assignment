@@ -4,11 +4,13 @@ import '../css/App.css';
 import '../css/main.css';
 import Home from './Home';
 import Segment from './Segment';
+import Loader from './Loader';
+import Footer from './Footer';
 
 
 function App() {
 
-  const [webhookData, setWebhookData] = useState([])
+  const [webhookData, setWebhookData] = useState(null)
 
   useEffect(() => {
     fetch('https://cors-anywhere.herokuapp.com/https://webhook.site/token/9a91f094-64f6-4960-9f4f-3c9d1a937d3b/requests', {
@@ -22,35 +24,27 @@ function App() {
     })
       .then((resp) => resp.text())
       .then((text) => {
-        console.log('check text: ', text)
-        const data = JSON.parse(text)
+        if(!text){
+          throw new Error('Empty text Response')
+        }
+        
         try {
-          alert('Data alert')
-          console.log('Received Data: ', data)
+          const data = JSON.parse(text)
 
           const receivedData = data.data
 
-          if (receivedData.length > 0) {
-            const contentArrays = receivedData.map((element) => {
-              try {
-                // Parse the content field as JSON
-                return JSON.parse(element.content);
-              } catch (error) {
-                console.error('Error parsing content:', error);
-                return null; // Handle parsing errors gracefully
-              }
-            }).filter(item => item !== null); // Filter out any parsing errors
-
-            console.log('data.data length > 0');
-            setWebhookData(contentArrays);
-          }
-          else {
-            console.log('data.data length lesser than or equals 0')
-            console.log('No Data found from Web Hook')
+          if(receivedData && receivedData.length>0){
+            const contentArrays = receivedData.filter(item=>item.content!=='')
+            .map((e)=>{
+              return JSON.parse(e.content)
+            })
+            setWebhookData(contentArrays)
+          }else
             setWebhookData({})
-          }
         } catch (err) {
           console.log('Err found on JSON Parse: ', err)
+          alert('Please click on the "Request temporary access to the demo server" button')
+          window.open("https://cors-anywhere.herokuapp.com/corsdemo", "_blank");
         }
       }).catch((error) => {
         alert('Err Occ')
@@ -63,14 +57,25 @@ function App() {
       })
     }, [])
 
-  return(
-    <>
-      <Routes>
-        <Route path="/" element={<Home data={webhookData} />}/>
-        <Route path="/segment/:segmentId" element={<Segment data={webhookData} />}/>
-      </Routes>
-    </>
-  )
+    if(webhookData!==null){
+      return(
+        <>
+          <Routes>
+            <Route path="/" element={<Home data={webhookData} />}/>
+            <Route path="/segment/:segmentId" element={<Segment data={webhookData} />}/>
+          </Routes>
+          <Footer/>
+        </>
+      )
+    }else{
+      return(
+        <>
+          <Loader/>
+        </>
+      )
+    }
+
+
 }
 
 export default App;
