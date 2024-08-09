@@ -13,12 +13,12 @@ function App() {
   const [webhookData, setWebhookData] = useState(null)
 
   useEffect(() => {
-    fetch('https://cors-anywhere.herokuapp.com/https://webhook.site/token/9a91f094-64f6-4960-9f4f-3c9d1a937d3b/requests', {
+    fetch('https://cors-anywhere.herokuapp.com/https://webhook.site/token/003d1a36-c72a-4dbc-bb9b-063e9fb5b0ca/requests', {
       method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        'origin': 'http://localhost:3000',
+        'origin': 'https://skclabs.vercel.app/',
         'x-requested-with': 'XMLHttpRequest'
       }
     })
@@ -43,7 +43,7 @@ function App() {
             setWebhookData({})
         } catch (err) {
           console.log('Err found on JSON Parse: ', err)
-          alert('Please click on the "Request temporary access to the demo server" button')
+          alert('For Accessing this page: Please open the newly opened tab, and click on the "Request temporary access to the demo server" button.')
           window.open("https://cors-anywhere.herokuapp.com/corsdemo", "_blank");
         }
       }).catch((error) => {
