@@ -43,7 +43,7 @@ function App() {
             setWebhookData({})
         } catch (err) {
           console.log('Err found on JSON Parse: ', err)
-          alert('For Accessing this page: Please open the newly opened tab, and click on the "Request temporary access to the demo server" button.')
+          alert('To access this page: Please go to the newly opened tab and click the "Request temporary access to the demo server" button.')
           window.open("https://cors-anywhere.herokuapp.com/corsdemo", "_blank");
         }
       }).catch((error) => {
